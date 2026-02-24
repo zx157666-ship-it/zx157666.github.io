@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人作品集 | Portfolio</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+:root {
+  --bg: #0c0c0e;
+  --card: #161618;
+  --accent: #7777ff;
+  --text: #f0f0f0;
+  --gray: #888;
+  --radius: 16px;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  padding-bottom: 80px;
+}
+
+/* 头部 */
+.header {
+  background: var(--card);
+  padding: 50px 20px;
+  text-align: center;
+  border-bottom: 1px solid #222;
+}
+.avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 3px solid var(--accent);
+  box-shadow: 0 0 40px rgba(119, 119, 255, 0.2);
+  transition: 0.3s;
+}
+.avatar:hover {
+  transform: scale(1.05);
+}
+.name {
+  margin-top: 18px;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.contact {
+  margin-top: 8px;
+  color: var(--gray);
+  font-size: 16px;
+}
+.btn {
+  margin-top: 20px;
+  padding: 12px 26px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+/* 容器 */
+.container {
+  max-width: 1100px;
+  margin: 50px auto;
+  padding: 0 20px;
+}
+.section-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-title::before {
+  content: '';
+  width: 6px;
+  height: 24px;
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+/* 上传区域 */
+.upload-box {
+  background: var(--card);
+  padding: 30px;
+  border-radius: var(--radius);
+  margin-bottom: 50px;
+  border: 1px solid #2a2a2c;
+}
+.upload-box input,
+.upload-box button {
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #2a2a2c;
+  background: #1a1a1d;
+  color: #fff;
+  font-size: 15px;
+}
+.upload-box input::placeholder {
+  color: #666;
+}
+
+/* 作品网格 */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid #2a2a2c;
+  transition: 0.3s;
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+}
+.card img,
+.card video {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+}
+.card-title {
+  padding: 18px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* 弹窗 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.modal-box {
+  background: var(--card);
+  padding: 36px;
+  border-radius: var(--radius);
+  width: 90%;
+  max-width: 460px;
+  border: 1px solid #2a2a2c;
+}
+.modal-box input {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+  border-radius: 12px;
+  border: 1px solid #2a2a2c;
+  background: #1a1a1d;
+  color: #fff;
+}
+.save {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  width: 100%;
+  margin-top: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+#avatar-input {
+  display: none;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <input type="file" id="avatar-input" accept="image/*">
+  <img id="avatar" class="avatar" src="https://picsum.photos/400/400">
+  <div id="name">加载中...</div>
+  <div id="contact">加载联系方式...</div>
+  <button class="btn" onclick="openModal()">编辑个人资料</button>
+</div>
+
+<div class="container">
+  <div class="section">
+    <div class="section-title">上传作品</div>
+    <div class="upload-box">
+      <input type="file" id="file" accept="image/*,video/*">
+      <input type="text" id="work-name" placeholder="作品名称">
+      <button class="btn" onclick="upload()">发布到云端</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">我的作品</div>
+    <div class="grid" id="list"></div>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h3 style="margin-bottom:16px;">编辑个人资料</h3>
+    <input id="edit-name" placeholder="你的名字">
+    <input id="edit-contact" placeholder="微信 / 电话 / 邮箱 / 站酷">
+    <button class="save" onclick="save()">保存到云端</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
+<script>
+const client = new Appwrite.Client();
+const storage = new Appwrite.Storage(client);
+const database = new Appwrite.Databases(client);
+
+client
+  .setEndpoint("https://cloud.appwrite.io/v1")
+  .setProject("6795c1a50d5b2f462b23");
+
+const DB_ID = "6795c1c38b682dabfb24";
+const COLL_ID = "6795c1cd9c5229b5b1b5";
+const BUCKET_ID = "6795c1e28d892f8a8f22";
+
+loadUser();
+loadWorks();
+
+// 更换头像
+document.getElementById("avatar").onclick = () => {
+  document.getElementById("avatar-input").click();
+};
+document.getElementById("avatar-input").onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const res = await storage.createFile(BUCKET_ID, Appwrite.ID.unique(), file);
+  const url = storage.getFileView(BUCKET_ID, res.$id);
+  document.getElementById("avatar").src = url;
+  await database.updateDocument(DB_ID, COLL_ID, "user", { avatar: url });
+};
+
+// 编辑资料
+function openModal() {
+  document.getElementById("modal").style.display = "flex";
+}
+async function save() {
+  const name = document.getElementById("edit-name").value;
+  const contact = document.getElementById("edit-contact").value;
+  await database.updateDocument(DB_ID, COLL_ID, "user", { name, contact });
+  document.getElementById("name").innerText = name;
+  document.getElementById("contact").innerText = contact;
+  document.getElementById("modal").style.display = "none";
+}
+
+// 加载个人信息
+async function loadUser() {
+  try {
+    const data = await database.getDocument(DB_ID, COLL_ID, "user");
+    document.getElementById("name").innerText = data.name || "你的名字";
+    document.getElementById("contact").innerText = data.contact || "点击编辑联系方式";
+    if (data.avatar) document.getElementById("avatar").src = data.avatar;
+  } catch (e) {}
+}
+
+// 上传作品
+async function upload() {
+  const file = document.getElementById("file").files[0];
+  const title = document.getElementById("work-name").value;
+  if (!file || !title) return alert("请选择文件并填写标题");
+
+  const res = await storage.createFile(BUCKET_ID, Appwrite.ID.unique(), file);
+  const url = storage.getFileView(BUCKET_ID, res.$id);
+  const type = file.type.startsWith("image") ? "image" : "video";
+
+  await database.createDocument(DB_ID, COLL_ID, Appwrite.ID.unique(), {
+    title, url, type
+  });
+
+  alert("发布成功！");
+  document.getElementById("file").value = "";
+  document.getElementById("work-name").value = "";
+  loadWorks();
+}
+
+// 加载作品
+async function loadWorks() {
+  const res = await database.listDocuments(DB_ID, COLL_ID);
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  res.documents.forEach(item => {
+    if (item.title) {
+      list.innerHTML += `
+      <div class="card">
+        ${item.type === "image" ? `<img src="${item.url}">` : `<video src="${item.url}" controls></video>`}
+        <div class="card-title">${item.title}</div>
+      </div>`;
+    }
+  });
+}
+</script>
+</body>
+</html>
